@@ -1,0 +1,87 @@
+/* I hate css */
+
+body,html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #0B0E14;
+}
+
+a {
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+}
+
+h1 {
+    font-size: 5em; 
+    text-align: center; 
+    color: white;
+}
+
+h4 {
+    text-align: center;
+    color: white;
+}
+select {
+    background-color: #191b1d;
+    color: white;
+    border-color: grey;
+}
+
+a:visited{
+    color: aquamarine;
+}
+
+#input {
+    margin: 0.5rem;
+    background-color: #191b1d;
+    border-color: grey;
+    color: grey;
+}
+
+#output {
+    margin: 0.5rem;
+    background-color: #191b1d;
+    border-color: grey;
+    color: grey;
+}
+
+.container {
+    padding: 25px;
+}
+
+@media only screen and (min-width: 600px) {
+    
+    input[type="text"] {
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid #ccc;
+    }
+    
+    select {
+        padding: 15px;
+        border-radius: 20px;
+        width: 70px;
+    }
+    
+
+}
+@media only screen and (max-width: 600px) {
+    input[type="text"] {
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid #ccc;
+        width: 52%;
+    }
+    
+    select {
+        padding: 15px;
+        border-radius: 20px;
+        width: 27%;
+    }
+    }

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockCli</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script type="text/javascript" src="templates/scripts.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 id="time"></h1>
+        <form>
+            <select id="select1" class="select"></select>
+            <input type="text" id="input" placeholder="Wpisz kwote">
+            <input type="text" id="output" placeholder="Przeliczone" readonly>
+            <select id="select2" class="select"> </select>
+        </form>
+        <h4 id="update">Ostatnia aktualizacja: {{timer}}</h4>
+        <a href="/cli">Co to jest?</a>
+    </div>
+    <script src="/static/scripts.js"></script>
+</body>
+</html>

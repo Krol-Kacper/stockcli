@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../static/styles_2.css">
+        <title>How to</title>
+    </head>
+    <body>
+        <div class="container">
+            <h2>1. Co to jest?</h2>
+            <p>StockCli to proste <a href ="https://pl.wikipedia.org/wiki/Interfejs_programowania_aplikacji">API</a> którego celem jest możliwość przeliczania walut z poziomu konsoli. Strona główna to także prosta implementacja projektu, która korzystając z mojego api pozwala na dokonania przeliczenia w przeglądarce.</p>
+            <h2>2. Jak korzystać z api?</h2>
+            <p>Oprócz wykonywania przeliczeń w przeglądarce można także samemu wysłać zapytanie do strony i otrzymać odpowiednią odpowiedź.</p>
+            <p><b>2.1</b> Najprostrzą metodą jest wykorzystanie napisanego przeze mnie skryptu w pythonie, który można znaleźć wraz z instrukcjami na moim <a>githubie</a></p>
+            <p><b>2.2</b> Drugim sposobem jest ręczne wysłanie zapytania metodą GET na adres <a href="/cli/cli">/cli/cli</a>. Można to zrobić zarówno w przeglądarce jak i w specjalnym do tego narzędziu np. curl. W zapytaniu należy uwzględnić następujące parametry :</p>
+            <div class="frame">
+                <p><b>start</b> - nazwa waluty z której przeliczamy.</p>
+                <p><b>value</b> - wartość, którą chcemy przeliczyć.</p>
+                <p><b>end</b> - nazwa waluty, którą chcemy przeliczyć.</p>
+                <p><b>accur</b> - dokładność przeliczonej wartości po przecinku.*</p>    
+                <p><b>pretty</b> - dowolny argument powoduje, że odpowiedź od serwera jest czytelniejsza dla oka.*</p>
+                <p>* Opcjonalne</p>
+            </div>
+            <br>
+            <details style="color: white;">
+                <summary><b>2.3</b> Przykładowa implementacja: </summary>
+                <p>Zamiana 50 zł na euro.</p>
+                <img src="../static/curl.png">
+                <p>Taki sam efekt można uzyskać w przeglądarce przechodząc na adres napisany żółtym tekstem. <a href="/cli/cli?start=PLN&value=50&end=EUR&pretty=yes">Na przykład.</a></p>
+            </details>
+            
+            <p><b>2.4</b> Należy pamiętać, aby podać właściwe skróty walut. Dla fiat waluty są z wielkich liter, z kolei dla kryptowalut z małych. Dlaczego? Dużo walut. Łatwiej odróżnić.</p>
+            <h2>3. Dostępne waluty</h2>
+            <p>Api posiada możliwość przetwarzania 170 walut fiat, a także 100 najpopularniejszych kryptowalut. Całą listę wraz z ich wartościami w USD można zobaczyć na <a href="/cli/list">/cli/list</a> </p>
+            <p>Naturalnie, jako że lista jest w postaci json, można ją ściągać i wykorzystywać na własny użytek, ale -> patrz punkt 4.</p>
+            <p>W liście znajduję się także wartość "updated", która wskazuje czas ostatniej aktualizacji listy.</p>
+            <h2>4. Ograniczenia</h2>
+            <p>Jako, że StockCli powstał wyłącznie jako projekt na studia posiada on pewne ograniczenia:</p>
+            <p><b>4.1</b> Dane odnośnie wartości walut są dostarczane z pewnym opóźnieniem. Zwykłe waluty aktualizują się o pełnych godzinach, z kolei krypto co 5 minut. Jest to związane z wykorzystaniem bezpłatnych api giełdowych, które zostaną podlinkowane poniżej:</p>
+            <a href="https://coingecko.com">coingecko.com</a><br>
+            <a href="https://openexchangerates.org">openexchangerates.org</a><br>
+            <p><b>4.2</b> Z tego samego powodu istnieje miesięczny limit zapytań w postaci 1000/miesiąc w przypadku fiat i 10000/miesiąc w przypadku krypto.</p>
+            <div class="frame">
+                <p>Waluty fiat : {{fiatl}}/1000</p>
+                <p>Kryptowaluty : {{cryptol}}/10000</p>
+            </div>
+            <br>
+            <a href="/">Powrót</a>
+        </div>
+    </body>
+</html>
