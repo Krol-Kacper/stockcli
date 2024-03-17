@@ -12,21 +12,18 @@ class Manager:
             return False
         return True
 
-    #1000 req / month
+    #1000 req / month, 1 hour freshsness
     def updateFiat(self):
-        base = "USD" #changing base is not allowed in free tier
-        prettyprint = "false"
-        show_alternative = "false"
-        url = "https://openexchangerates.org/api/latest.json?app_id="+self.api_fiat+"&base="+base+"&prettyprint="+prettyprint+"&show_alternative="+show_alternative
+        url = "https://openexchangerates.org/api/latest.json?app_id="+self.api_fiat
         headers = {"accept": "application/json"}
         response = requests.get(url, headers=headers)
         return (json.loads(response.text) | {"updated" : int(time.time())})
     
     #10000 req / month, 30 req / minute, 60 secs freshness
     def updateCrypto(self):
-        base = "USD"
-        numberof = "100"
-        url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency="+base+"&order=market_cap_desc&per_page="+numberof+"&page=1"
+        numberof = "100" #number of crypto to be fetched (max 100 per page)
+        page = "1"
+        url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD&order=market_cap_desc&per_page="+numberof+"&page="+page
         headers = {"x-cg-demo-api-key": self.api_crypto}
         response = requests.get(url, headers=headers)
         return json.loads(response.text)
