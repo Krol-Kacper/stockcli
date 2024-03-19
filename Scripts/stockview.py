@@ -3,7 +3,10 @@ from PyQt6.QtWidgets import QApplication, QWidget, QDoubleSpinBox, QComboBox, QP
 import requests
 import json
 
-url = "http://127.0.0.1:5000/cli" #! page url
+direct_default = False #indirect by default
+url = "https://stockcli.kackrol.ovh/cli" #indirect server url
+api_fiat = "" #openexchangerates api key
+api_crypto = "" #coingecko api key
 
 def parser():
     parser = argparse.ArgumentParser(
@@ -30,7 +33,6 @@ def parser():
         '-a',
         action='store',
         metavar="<digits>",
-        default="N",
         nargs=1,
         help="ACCURACY - specify convert accuracy in number of digits"
     )
@@ -39,17 +41,64 @@ def parser():
         action="store_true",
         help="GUI - start the gui"
     )
+    if direct_default:
+        parser.add_argument(
+            '-p',
+            action="store_true",
+            help="PEER - use script with server url as a peer"
+        )
+    else:
+        parser.add_argument(
+            '-d',
+            action="store_true",
+            help="DIRECT - use script with your own api keys, without any peers"
+        )
     return parser.parse_args()
 
+def fetch():
+    url = "https://openexchangerates.org/api/latest.json?app_id="+api_fiat
+    headers = {"accept": "application/json"}
+    response = requests.get(url, headers=headers)
+    fiat = json.loads(response.text)
+    url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD&order=market_cap_desc&per_page=100&page=1"
+    headers = {"x-cg-demo-api-key": api_crypto}
+    response = requests.get(url, headers=headers)
+    crypto = json.loads(response.text)
+    simplycrypto = {}
+    for i in range(100):
+        simplycrypto.update({crypto[i]["symbol"] : 1/crypto[i]["current_price"]})
+    return fiat["rates"], simplycrypto
+
+def direct(fiat, crypto, start,value,end,accur=None):
+    merged = fiat | crypto
+    usd = float(value) * 1/merged[start]
+    if not accur == None:
+        return f'{round(usd * merged[end], int(accur)):.{int(accur)}f}'
+    elif start in crypto.keys() or end in crypto.keys():
+        return f'{round(usd * merged[end],8):.8f}'
+    else: 
+        return f'{round(usd * merged[end],2)}'
+    
+def peer(start,value,end,accur=False):
+    if accur:
+        myobj = {"start" : start, "value" : value, "end" : end, "accur" : accur}
+        response = requests.get(url+"/cli", myobj)
+        return response.text
+    else:
+        myobj = {"start" : start, "value" : value, "end" : end}
+        response = requests.get(url+"/cli", myobj)
+        return response.text
+    
 def gui():
     def submit():
         value = line_first.value()
         fromm = box_first.currentText()
         to = box_second.currentText()
         occur = line_first.decimals()
-        myobj = {"start" : fromm, "value" : value, "end" : to, "accur" : occur}
-        response = requests.get(url+"/cli", myobj)
-        line_second.setValue(float(response.text))
+        if direct_default:
+            line_second.setValue(float(direct(fiat,crypto,fromm,value,to,occur)))
+        else:
+            line_second.setValue(float(peer(fromm,value,to,occur)))
 
     def accuracy(accur):
         line_first.setDecimals(accur)
@@ -57,7 +106,8 @@ def gui():
         line_first.setSingleStep(1 * (10 ** -accur))
         line_second.setSingleStep(1 * (10 ** -accur))
 
-    currmap = json.loads(requests.get(url+"/list").text)
+    fiat, crypto = fetch()
+    currmap = fiat | crypto
     currlist = list(currmap.keys())
 
     app = QApplication([])
@@ -104,17 +154,44 @@ params = parser()
 if params.g == True:
     gui()
 elif params.l == True:
-    if params.f == False:
-        print(f"you can see the json list at : {url}/list \nadd parameter -f to print it here")
-    else:
-        response = requests.get(url+"/list")
-        print(response.text)
-else:
-    if not params.c == None:
-        if params.a == None:
-            myobj = {"start" : params.c[1], "value" : params.c[0], "end" : params.c[2], "accur" : params.a[0]}
-            response = requests.get(url+"/cli", myobj)
+    if not direct_default:
+        if params.f == False:
+            print(f"you can see the json list at : {url}/list \nAdd parameter -f to print it here")
         else:
-            myobj = {"start" : params.c[1], "value" : params.c[0], "end" : params.c[2]}
-            response = requests.get(url+"/cli", myobj)
-        print(f'{params.c[0]} {params.c[1]} -> {response.text} {params.c[2]}')
+            response = requests.get(url+"/list")
+            print(response.text)
+    else:
+        if direct_default:
+            if params.f == False:
+                print("You cant the see list in web in direct mode\nAdd -f to print it here")
+            else:
+                fiat, crypto = fetch()
+                merged = fiat | crypto
+                print(f"{merged}")
+else:
+    def printDirect():
+        fiat, crypto = fetch()
+        if not params.c == None:
+            if params.a == None:
+                response = direct(fiat, crypto, params.c[1], params.c[0], params.c[2])
+            else:
+                response = direct(fiat, crypto, params.c[1], params.c[0], params.c[2], params.a[0])
+        print(f'{params.c[0]} {params.c[1]} -> {response} {params.c[2]}')
+    def printPeer():
+        if not params.c == None:
+            if params.a == None:
+                response = peer(params.c[1], params.c[0], params.c[2])
+            else:
+                response = peer(params.c[1], params.c[0], params.c[2], params.a[0])
+            print(f'{params.c[0]} {params.c[1]} -> {response} {params.c[2]}')
+
+    if direct_default:
+        if params.p:
+            printPeer()
+        else:
+            printDirect()
+    else:
+        if params.d:
+            printDirect()
+        else:
+            printPeer()
