@@ -63,11 +63,6 @@ def handle_get():
             return f'{prefix}{round(usd * merged[end],2)}{suffix}'
     except:
         return "Nieznany błąd :c"
-
-@app.route('/cli')
-def info():
-    usage = stockManager.loadJson("data/usage.json")
-    return render_template("help.html", fiatl=usage["openexchange"], cryptol=usage["coingecko"])
     
 @app.route('/cli/list')
 def list():
