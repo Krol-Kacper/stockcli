@@ -106,9 +106,13 @@ def gui():
         line_first.setSingleStep(1 * (10 ** -accur))
         line_second.setSingleStep(1 * (10 ** -accur))
 
-    fiat, crypto = fetch()
-    currmap = fiat | crypto
-    currlist = list(currmap.keys())
+    if direct_default:
+        fiat, crypto = fetch()
+        currmap = fiat | crypto
+        currlist = list(currmap.keys())
+    else:
+        currmap = json.loads(requests.get(url+"/list").text)
+        currlist = list(currmap.keys())
 
     app = QApplication([])
     window = QWidget()
